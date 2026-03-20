@@ -82,6 +82,7 @@ const Sidebar = ({ isOpen = true, toggleSidebar = () => {} }) => {
         flexDirection: 'column',
         flexShrink: 0,
         height: '100vh',
+        alignSelf: 'stretch', 
         overflow: 'hidden',
         transition: 'width 0.2s cubic-bezier(.4,0,.2,1)',
         background: 'linear-gradient(180deg, #0F1F3D 0%, #162848 100%)',

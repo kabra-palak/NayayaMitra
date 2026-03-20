@@ -1,75 +1,123 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
-import './App.css'
+import { MdMenu } from "react-icons/md";
+import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
 import Sidebar from "./components/Sidebar";
-// import Header from "./components/Header";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
 import api from "./Axios/axios";
 import useAuthStore from "./context/AuthContext";
 
+/* ───────────── Layout ───────────── */
+function Layout() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  return (
+   <div
+    style={{
+      display: "flex",
+      height: "100vh",
+      width: "100%",
+      overflow: "hidden",
+    }}
+   >
+      
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        toggleSidebar={() => setSidebarOpen((s) => !s)}
+      />
+
+      {/* Floating button */}
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          style={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            zIndex: 50,
+            padding: 8,
+            borderRadius: 8,
+            background: "white",
+            boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)",
+          }}
+        >
+          <MdMenu size={20} />
+        </button>
+      )}
+
+      {/* Main Content */}
+     <div
+       style={{
+         flex: 1,
+         overflow: "auto",
+         background: "#f9fafb",
+         padding: 0,
+       }}
+     >
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── App ───────────── */
 function App() {
   const token = useAuthStore((state) => state.token);
   const setUser = useAuthStore((state) => state.setUser);
-  // const [theme] = useState("light");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         if (!token) return;
+
         const resp = await api.get("/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         setUser(resp.data.user);
       } catch (err) {
         console.error(err);
       }
     };
+
     fetchProfile();
   }, [token, setUser]);
-
-  // Apply simple body-level theme class for light/dark toggling
-  // useEffect(() => {
-  //   // initialize dynamic palette variables
-  //   applyPalette(defaultPalette);
-  // }, [theme]);
 
   return (
     <Router>
       <Routes>
-        <Route
-          path="/*"
-          element={
-            <div className="flex h-screen">
-              
-              {/* Sidebar */}
-              <Sidebar
-                isOpen={sidebarOpen}
-                toggleSidebar={() => setSidebarOpen((s) => !s)}
-              />
+        <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+        {/* Redirect root */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
 
-              {/* Open button when sidebar is closed */}
-              {!sidebarOpen && (
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className="fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md"
-                >
-                  <MdMenu size={20} />
-                </button>
-              )}
+        {/* Layout wrapper */}
+        <Route path="/*" element={<Layout />}>
+          
+          <Route
+  path="home"
+  element={
+    <>
+      {/* <ProtectedRoute> */}
+      <Home />
+      {/* </ProtectedRoute> */}
+    </>
+  }
+/>
+        </Route>
 
-              {/* Empty main area (for now) */}
-              <div className="flex-1 bg-gray-50 flex items-center justify-center">
-                <h1 className="text-xl text-gray-500">
-                  Main Content Area
-                </h1>
-              </div>
-
-            </div>
-          }
-        />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
