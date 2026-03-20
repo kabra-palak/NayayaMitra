@@ -6,8 +6,9 @@ import { config } from "dotenv";
 config();
 import session from "express-session";
 import http from "http";
-
-
+import connectDB from "./config/db.js";
+import dns from "node:dns/promises";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const app = express();
 
 app.use(
@@ -26,7 +27,7 @@ app.use(passport.initialize());
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
-
+ connectDB();
 const server = http.createServer(app);
 
 const PORT = process.env.PORT || 3000;
