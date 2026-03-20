@@ -14,6 +14,7 @@ import FindLawyer from "./pages/FindLawyer";
 import CompleteRegistration from "./pages/CompleteRegistration";
 import LawyerRequests from "./pages/LawyerRequests";
 import LawyerOnboard from "./pages/LawyerOnboard";
+import ChatView from "./pages/ChatView";
 import MyClients from "./pages/MyClients";
 import FormAutoFill from "./pages/FormAutoFill";
 import GeneralAsk from "./pages/GeneralAsk";
@@ -209,6 +210,42 @@ function App() {
                 <GeneralAsk/>
               {/* </ProtectedRoute> */}
               </>
+            }
+          />
+          <Route
+            path="chat/:id"
+            element={
+              <>
+              {/* <ProtectedRoute> */}
+                <ChatView/>
+              {/* </ProtectedRoute> */}
+              </>
+            }
+          />
+          <Route
+            path="chats"
+            element={
+              <>
+              {/* <ProtectedRoute> */}
+                <ChatView/>
+              {/* </ProtectedRoute> */}
+              </>
+            }
+          />
+          <Route
+            path="chats/:id"
+            element={
+              <>
+              {/* <ProtectedRoute> */}
+                <ChatView/>
+              {/* </ProtectedRoute> */}
+              </>
+            }
+          />
+           <Route
+            path="*"
+            element={
+              <Navigate to={'/home'} />
             }
           />
         </Route>
